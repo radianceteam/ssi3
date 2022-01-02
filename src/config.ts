@@ -1,0 +1,1 @@
+export const JWT_SECRET = 'Radiance Group sd4y8lgjk34534';

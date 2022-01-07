@@ -96,7 +96,7 @@ Required fields: did
 
 returns a 'value' to be verify string
 
-
+____
 * Signature Hex Verification
 
 /auth/login
@@ -120,6 +120,7 @@ You can read the authentication header from the headers of the request
 
 Authorization: Token jwt.token.here
 
+____
 
 * Signature to confirm the private key
 
@@ -146,7 +147,7 @@ Required fields: address
 
 returns did document contract address
 
-
+____
 * Did document
 
 /auth/diddoc
@@ -164,7 +165,7 @@ Example request body:
 Required fields: did
 
 returns did document
-
+____
 
 ## Authentication
 This applications uses JSON Web Token (JWT) to handle authentication. The token is passed with each request using the Authorization header with Token scheme. The JWT authentication middleware handles the validation and authentication of the token. Please check the following sources to learn more about JWT.

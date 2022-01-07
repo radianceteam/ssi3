@@ -35,6 +35,12 @@ export class AuthController {
       return this.authService.buildUserResponse(user);
     }
 
+    @Get('user/id')
+    @UseGuards(AuthGuard)
+    async currentId(@User() user: UsersEntity): Promise<boolean> {
+      return true;
+    }
+
     @Post('test')
     async signTest(
         @Body() sign: any
@@ -43,6 +49,25 @@ export class AuthController {
         const val = await this.authService.signMessage(sign);
         return val
     }
+
+    @Post('didadrr')
+    async getDid(
+        @Body() did: any
+        ): Promise<any> {
+            console.log(did)
+        const val = await this.authService.getDidContract(did);
+        return val
+    }
+
+    @Post('diddoc')
+    async getDidDoc(
+        @Body() did: any
+        ): Promise<any> {
+            console.log(did)
+        const val = await this.authService.getDidDoc(did);
+        return val
+    }
+
     @Post('testdecode')
     async verifyTest(
         @Body() sign: any

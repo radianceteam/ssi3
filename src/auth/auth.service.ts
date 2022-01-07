@@ -2,6 +2,7 @@ import {signerNone, TonClient} from '@tonclient/core';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {libNode} from '@tonclient/lib-node';
 import {DIDStorageABI} from '../tools/DIDStorageABI';
+import {DIDDocABI} from '../tools/DIDDocABI';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VerifyDBEntity } from './verifyDB.entity';
 import { Repository } from 'typeorm';
@@ -14,11 +15,15 @@ import { LoginUserDto } from './dto/login.dto';
 import { UsersEntity } from './users.entity';
 let crypto = require('crypto');
 import * as ed from 'noble-ed25519';
+import { Account } from '@tonclient/appkit';
+import { stringify } from 'querystring';
 
 
 
 @Injectable()
 export class AuthService {
+
+    
     constructor(
         @InjectRepository(VerifyDBEntity)
         private readonly verifyDBRepository: Repository<VerifyDBEntity>,
@@ -47,6 +52,15 @@ export class AuthService {
     }
 
     async login(loginUserDto: LoginUserDto): Promise<any>{
+
+        const UserDID = await this.verifyDBRepository.findOne({
+            did: loginUserDto.did
+                })
+        //loginUserDto.message == UserDID.value
+        
+        loginUserDto.message = UserDID.value
+        console.log(loginUserDto)
+
         const verify = await this.verifyMessage(loginUserDto)
         console.log(verify)
         if(!verify){
@@ -55,6 +69,15 @@ export class AuthService {
             HttpStatus.UNPROCESSABLE_ENTITY
             )
         }
+
+        const pubDocDid = this.getDidDocPubKey(loginUserDto.did)
+        if(!pubDocDid){
+            throw new HttpException(
+                'Not valid did Document',
+                HttpStatus.UNPROCESSABLE_ENTITY
+                )
+        }
+
         const newUser = new UsersEntity();
         Object.assign(newUser, loginUserDto)
 
@@ -71,6 +94,62 @@ export class AuthService {
 
     }
 
+    async getDidContract(did): Promise<string>{
+        TonClient.useBinaryLibrary(libNode);
+        const tonClient = new TonClient({network: {endpoints: ['net.ton.dev']}});
+        const DIDStorageContractAddress = '0:ee63d43c1f5ea924d3d47c5a264ad2661b5a4193963915d89f3116315350d7d3';
+        const acc = new Account({abi: DIDStorageABI}, {
+            address: DIDStorageContractAddress, 
+            client: tonClient,
+            signer: signerNone()
+        });
+        const strDid =  did.did || did
+
+        try {
+            const response = await acc.runLocal('resolveDidDocument', {id: `0x${strDid}`});
+            console.log('LOADED DID ADDRESS', response.decoded.out_messages[0].value.addrDidDocument);
+            return response.decoded.out_messages[0].value.addrDidDocument;
+        } catch (err) {
+            console.log('DID Address load failed', err);
+            return null;
+        }
+
+    }
+
+    async getDidDoc(address): Promise<any>{
+        TonClient.useBinaryLibrary(libNode);
+        const tonClient = new TonClient({network: {endpoints: ['net.ton.dev']}});
+        const strAddress =  address.addr || address 
+
+        const DIDStorageContractAddress = strAddress;
+        const acc = new Account({abi: DIDDocABI}, {
+            address: DIDStorageContractAddress, 
+            client: tonClient,
+            signer: signerNone()
+        });
+        try {
+        const response = await acc.runLocal('getDid', {});
+        console.log(JSON.parse(response.decoded.out_messages[0].value.value0.didDocument));
+        return JSON.parse(response.decoded.out_messages[0].value.value0.didDocument)
+    } catch (err) { 
+        console.log('DID Document load failed', err);
+        return null;
+    }
+    }
+
+    async getDidDocPubKey (DidDoc): Promise<any>{
+
+       const adrr = await this.getDidContract(DidDoc)
+      
+       let pubDoc
+
+       pubDoc = await this.getDidDoc(adrr)
+
+       return pubDoc.publicKey
+
+    }
+
+
     generateToken(): string {
         const TOKEN_SIZE = 32;
         return nanoid(TOKEN_SIZE);
@@ -85,17 +164,17 @@ export class AuthService {
 
     buildUserResponse(user: UsersEntity): UserResponseInterface {
         return{
-            user: {
-                ...user,
+           // user: {
+                //...user,
                 token: this.generateJwt(user)
-            }
+           // }
         }
     }
     async findById(id: number): Promise<UsersEntity> {
         return this.userRepository.findOne(id);
       }
 
-      async signMessage(input): Promise<any> {
+    async signMessage(input): Promise<any> {
 
         const msg = input.message
         const msgHash = crypto.createHash('sha256').update(msg).digest('hex');
@@ -108,7 +187,7 @@ export class AuthService {
         // return true;//todo delete me
 
         const hash = crypto.createHash('sha256').update(input.message).digest('hex');
-        return await ed.verify(input.signatureHex, hash, input.publicKey);
+        return await ed.verify(input.signatureHex, hash, input.did);
     }
 
 }

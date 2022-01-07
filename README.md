@@ -1,33 +1,19 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[NestJS](https://github.com/nestjs/nest)  codebase containing ssi API
 
 ## Installation
-
+Clone the repository
+```bash
+$ git clone https://github.com/
+```
+Switch to the repo folder
+```bash
+$ cd everscale-ssi-api
+```
+Install dependencies
 ```bash
 $ npm install
 ```
@@ -45,29 +31,140 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Database
 
+The codebase contains examples of two different database abstractions, namely [TypeORM](https://typeorm.io/#/) and [PostgreSQL](https://www.postgresql.org/).
+
+The branch master implements TypeORM with a mySQL database.
+
+
+### TypeORM
+
+Create a new mysql database with the name everscale-ssi
+(or the name you specified in the ormconfig.json)
+
+Copy TypeORM config example file for database settings
 ```bash
-# unit tests
-$ npm run test
 
-# e2e tests
-$ npm run test:e2e
+import { ConnectionOptions } from "typeorm";
 
-# test coverage
-$ npm run test:cov
+const config: ConnectionOptions = {
+    type: "postgres",
+    host: "localhost",
+    port: 5432,
+    username: "your-mysql-username",
+    password: 'your-mysql-password',
+    database: 'everscale-ssi', 
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    synchronize: false,
+    migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+    cli: {
+        migrationsDir: 'src/migrations'
+    }
+};
+
+export default config;
 ```
 
-## Support
+Start local mysql server and create new database 'everscale-ssi'
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Run in console command, tables for all entities will be created.
 
-## Stay in touch
+```bash
+$ npm run db:create
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## API Specification
 
-## License
+### Authentication:
 
-Nest is [MIT licensed](LICENSE).
+* Signature to confirm the private key
+
+/auth
+
+Example request body:
+
+```bash
+{
+    "user":
+    {
+        "did": "did"
+    }
+}
+```
+Required fields: did
+
+returns a 'value' to be verify string
+
+
+* Signature Hex Verification
+
+/auth/login
+
+Example request body:
+
+```bash
+{
+    "user":
+    {
+        "signatureHex":"signatureHex",
+        "did": "did"
+}
+}
+```
+Required fields: signatureHex, did
+
+returns a value to JSON Web Token (JWT)
+
+You can read the authentication header from the headers of the request
+
+Authorization: Token jwt.token.here
+
+
+* Signature to confirm the private key
+
+/auth/user/id
+
+returns true if the user is found
+
+
+* Did document contract address
+
+/auth/didadrr
+
+Example request body:
+
+```bash
+{
+    "user":
+    {
+        "did": "did"
+    }
+}
+```
+Required fields: address
+
+returns did document contract address
+
+
+* Did document
+
+/auth/diddoc
+
+Example request body:
+
+```bash
+{
+    "user":
+    {
+        "addr": "addr"
+    }
+}
+```
+Required fields: did
+
+returns did document
+
+
+## Authentication
+This applications uses JSON Web Token (JWT) to handle authentication. The token is passed with each request using the Authorization header with Token scheme. The JWT authentication middleware handles the validation and authentication of the token. Please check the following sources to learn more about JWT.

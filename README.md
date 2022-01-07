@@ -122,11 +122,12 @@ Authorization: Token jwt.token.here
 
 ____
 
-* Signature to confirm the private key
+* Signature to confirm the JWT token
 
 /auth/user/id
 
-returns true if the user is found
+returns true if the user is found (boolean)
+____
 
 
 * Did document contract address

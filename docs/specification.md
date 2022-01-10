@@ -7,5 +7,6 @@
 
 ## constructor
 ### Params
-|Index|Name|Type      |Description              |
-|0    |codeDidDocument|contract code DIDDocument|
+|Index|Name           |Type      |Description              |
+|-----|---------------|----------|-------------------------|
+|0    |codeDidDocument/cell      /contract code DIDDocument/

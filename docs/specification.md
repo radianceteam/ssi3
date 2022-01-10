@@ -16,7 +16,7 @@ constructor
 
 
 ##
-addDid
+**addDid**
 
 **Details**: deploy new DID document
 

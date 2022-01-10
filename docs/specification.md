@@ -12,6 +12,7 @@
 |Index|Name           |Type      |Description              |
 |-----|---------------|----------|-------------------------|
 |0    |codeDidDocument|cell      |contract code DIDDocument|
+##
 
 
 

@@ -4,20 +4,19 @@
 
 **Details**: Deploys and resolver DID document.
 
-
-## constructor
+##
+constructor
 
 
 ### Params
 |Index|Name           |Type      |Description              |
 |-----|---------------|----------|-------------------------|
 |0    |codeDidDocument|cell      |contract code DIDDocument|
+
+
+
 ##
-
-
-
-
-## addDid
+addDid
 
 **Details**: deploy new DID document
 

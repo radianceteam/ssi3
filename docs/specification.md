@@ -4,8 +4,7 @@
 
 **Details**: Deploys and resolver DID document.
 
-##
-constructor
+## constructor
 
 
 ### Params
@@ -15,8 +14,7 @@ constructor
 
 
 
-##
-**addDid**
+## addDid
 
 **Details**: deploy new DID document
 

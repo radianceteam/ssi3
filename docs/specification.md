@@ -1,4 +1,7 @@
 # DIDStorage
+
+**Path**: [src/contracts/DidStorage.sol](../src/contracts/DidStorage.sol)
+
 **Title**: DIDStorage contract
 
 

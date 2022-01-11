@@ -73,6 +73,33 @@
 
 
 
+## resolveCodeHashDidDocument\
+
+**Details**: returns the hash of the DIDDocument contract
+
+### Returns
+|Index|Name               |Type   |Description|
+|-----|-------------------|-------|-----------|
+|0    |codeHashDidDocument|uint256|hash code  |
+
+
+
+## resolveDidDocument
+
+**Details**: returns the address of the DIDDocument contract
+
+### Params
+|Index|Name|Type   |Description           |
+|-----|----|-------|----------------------|
+|0    |id  |uint256|public key DID subject|
+
+### Returns
+|Index|Name           |Type   |Description                 |
+|-----|---------------|-------|----------------------------|
+|0    |addrDidDocument|address|address contract DIDDocument|
+
+
+
 
 
 

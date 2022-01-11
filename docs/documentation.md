@@ -24,7 +24,7 @@ Our system uses the DID method presented in the form of Everscale smart contract
 
 The DID scheme is a URI scheme conforming to RFC3986.
 
-DIDURI consists of 3 parts:
+DID URI consists of 3 parts:
  1) URI scheme ("did:")
  2) Identifier for the DID method ("everscale:")
  3) Unique DID method of a specific identifier

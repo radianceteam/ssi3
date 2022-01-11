@@ -6,36 +6,45 @@
 
 **DID controller** – An entity that has the capability to make changes to a DID document. A DID might have more than one DID controller.
 
-**DID document** – A set of data describing the subject of the DID, including mechanisms such as cryptographic public keys that can be used to authenticate yourself and confirm your connection with the DID.
+**DID document** – Набор данных, описывающих субъект DID, включая такие механизмы как криптографические открытые ключи, которые можно использовать для аутентификации себя и подтверждения своей связи с DID.
 
-**DID method** – The DID method is defined by the DID method specification, which specifies the exact operations by which DID and DID document are created, resolved, updated, and deactivated.
+**DID method** – Метод DID определяется спецификацией метода DID, которая указывает точные операции, с помощью которых создаются, разрешаются, обновляются и деактивируются DID и DID document.
 
-**DID subject** – An object identified by DID and described by DID document. DID subject can be anything: a person, a group, an organization, a physical thing, a digital thing, a logical thing, etc.
+**DID subject** – Объект, идентифицируемый DID и описываемый DID document. DID subject может быть что угодно: человек, группа, организация, физическая вещь, цифровая вещь, логическая вещь и т.д. 
 
-**verifiable data registry** – A system that simplifies the creation, verification, updating and/or deactivation of DID and DID document.
+**verifiable data registry** – Система, упрощающая создание, проверку, обновление и/или деактивацию DID и DID document.
 
 ## Annotation
 
-Decentralized identifiers are a new type of identifiers that use cryptography to verify data without third parties.  DID were designed in such a way that they could be separated from centralized registries, identity providers, and certification authorities. Each DID is associated with a DID document which in turn describes the DID subject to which the DID belongs.  
+Децентрализованные идентификаторы – это новый тип идентификаторов, которые используют криптографию для подтверждения данных без третьих сторон.  DID были разработаны таким образом что их можно было отделить от централизованных реестров, поставщиков удостоверений и центров сертификации. Каждый DID связан с DID document который в свою очередь описывает DID subject которому принадлежит DID.  
 
-Our system uses the DID method presented in the form of Everscale smart contracts that store information that is presented in the form of a DID document. The name of the DID method is "everscale".
+Наша система использует метод DID представленный в виде смарт-контрактов Everscale которые хранят информацию, которая представлена в виде DID document. Имя метода DID - «everscale». 
+
 
 ## DID syntax
 
-The DID scheme is a URI scheme conforming to RFC3986.
+Схема DID представляет собой схему URI, соответствующую RFC3986.
 
-DID URI consists of 3 parts:
- 1) URI scheme ("did:")
- 2) Identifier for the DID method ("everscale:")
- 3) Unique DID method of a specific identifier
+DID URI состоит из 3 частей: 
+1)	Схема URI(«did:»)
+2)	Идентификатор для метода DID(«everscale:»)
+3)	Уникальный метод DID конкретного идентификатора
 
+Наш метод Everscale DID соответствует требованиям, изложенным в разделе 8.1 did-core. DID которые используют наш метод должен начинаться с префикса: did:everscale. Остальная часть после префикса представляет собой идентификатор конкретного метода, который представлен в виде pubkey контракта Everscale, который принадлежит DID subject которого описывает DID document хранящийся под этим DID.
 
-Our Everscale DID method meets the requirements set out in section 8.1 of did-core. DID that use our method should start with the prefix: did:everscale. The rest after the prefix is the identifier of a specific method, which is represented as the pubkey of the Everscale contract, which belongs to the DID subject of which describes the DID document stored under this DID.
 
 **Example**: did:everscale:28f5254ada3193904d65d0ab4d60a05d8ae51f03a2d4cf7d4352030996188580
 
 
 ## The general scheme of relations
+
+
+## Операции CRUD
+
+Смарт-контракт DIDStorage служит интерфейсом для создания DID и поиска DID document по pubkey. Все действия по чтению, изменению и деактивации DID происходят в смарт-контракте DIDDocument, который создается для каждого DID и DIDDocument.
+
+Спецификацию всех функций контракта можно найти здесь: []
+
 
 
 

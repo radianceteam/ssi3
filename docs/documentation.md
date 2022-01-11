@@ -71,7 +71,7 @@ newDidIssuerAddr обновляет адрес DID controller
 newDidStatus обновляет статус DID Document
 deleteDidDocument полностью удаляет DID и DID Document
 
-### Запуск тестов
+## Запуск тестов
 
 
 

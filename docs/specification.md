@@ -105,6 +105,8 @@
 
 # DIDDocument
 
+**Path**: [src/contracts/DidDocument.sol](../src/contracts/DidDocument.sol)
+
 **Title**: contract for storing DID document
 
 **Details**: the contract provides basic CRUD functions for managing the DID document

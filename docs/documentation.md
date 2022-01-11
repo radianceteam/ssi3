@@ -19,3 +19,16 @@
 Decentralized identifiers are a new type of identifiers that use cryptography to verify data without third parties.  DID were designed in such a way that they could be separated from centralized registries, identity providers, and certification authorities. Each DID is associated with a DID document which in turn describes the DID subject to which the DID belongs.  
 
 Our system uses the DID method presented in the form of Everscale smart contracts that store information that is presented in the form of a DID document. The name of the DID method is "everscale".
+
+## DID syntax
+
+The DID scheme is a URI scheme conforming to RFC3986.
+
+DIDURI consists of 3 parts:
+ 1) URI scheme("did:")
+ 2) Identifier for the DID method("everscale:")
+ 3) Unique DID method of a specific identifier
+
+
+
+

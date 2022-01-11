@@ -13,3 +13,9 @@
 **DID subject** – An object identified by DID and described by DID document. DID subject can be anything: a person, a group, an organization, a physical thing, a digital thing, a logical thing, etc.
 
 **verifiable data registry** – A system that simplifies the creation, verification, updating and/or deactivation of DID and DID document.
+
+## Annotation
+
+Decentralized identifiers are a new type of identifiers that use cryptography to verify data without third parties.  DID were designed in such a way that they could be separated from centralized registries, identity providers, and certification authorities. Each DID is associated with a DID document which in turn describes the DID subject to which the DID belongs.  
+
+Our system uses the DID method presented in the form of Everscale smart contracts that store information that is presented in the form of a DID document. The name of the DID method is "everscale".

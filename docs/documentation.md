@@ -45,7 +45,33 @@ DID URI состоит из 3 частей:
 
 Спецификацию всех функций контракта можно найти здесь: [src/docs/specification.md](./specification.md)
 
+### Создать
 
+Everscale DID может быть создан на прямую если знать адрес контракта DIDStorage или используя наш SDK. 
+
+DID Document создается с помощью развертывания контракта DIDDocument и вызова функции init, которую нужно подписать secret key владельца pubkey указанного при создании DIDDocument.
+Для создания DID и DIDDocument нужно вызвать метод addDid в DIDStorage с правильными параметрами. И последующим вызовом init из DIDDocument
+
+### Читать
+
+Чтение можно разделить на 2 функции поиска контракта с помощью функции resolveDidDocument в контракте DIDStorage которая вернет адрес контракта DIDDocument
+
+Вторая часть заключается в чтение DID Document с помощь функции getDid в контракте DIDDocument
+
+
+### Обновить
+
+Для обновления DID Document существует 2 функции и доступны только для DID controller. 
+newDIDDocument обновляет сам DID Document
+newDidIssuerAddr обновляет адрес DID controller 
+
+### Деактивировать и удалить
+
+Методы доступны только DID controller
+newDidStatus обновляет статус DID Document
+deleteDidDocument полностью удаляет DID и DID Document
+
+### Запуск тестов
 
 
 

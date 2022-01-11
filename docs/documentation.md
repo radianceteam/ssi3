@@ -32,5 +32,5 @@ DIDURI consists of 3 parts:
 
 Our Everscale DID method meets the requirements set out in section 8.1 of did-core. DID that use our method should start with the prefix: did:everscale. The rest after the prefix is the identifier of a specific method, which is represented as the pubkey of the Everscale contract, which belongs to the DID subject of which describes the DID document stored under this DID.
 
-Example: did:everscale:28f5254ada3193904d65d0ab4d60a05d8ae51f03a2d4cf7d4352030996188580
+**Example**: did:everscale:28f5254ada3193904d65d0ab4d60a05d8ae51f03a2d4cf7d4352030996188580
 

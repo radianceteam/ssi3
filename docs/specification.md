@@ -73,7 +73,7 @@
 
 
 
-## resolveCodeHashDidDocument\
+## resolveCodeHashDidDocument
 
 **Details**: returns the hash of the DIDDocument contract
 

@@ -6,5 +6,7 @@ Code and tests of contracts written in solidity
 
 Clone the repository
 ```bash
-git clone 
+git clone https://github.com/radianceteam/ssi3.git
+```
+
 

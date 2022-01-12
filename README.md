@@ -19,3 +19,14 @@ Install dependencies
 npm install
 ```
 
+## Running tests
+
+Start the test
+```bash
+npm run test
+```
+
+### Description
+Тесты выполняються автоматически и показывают правильное выполнение функций контракта.
+
+### 

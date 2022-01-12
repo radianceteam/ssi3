@@ -38,7 +38,7 @@ DID URI состоит из 3 частей:
 
 ## The general scheme of relations
 
-(./scheme.png)
+![alt text](./scheme.png)
 
 
 ## Операции CRUD

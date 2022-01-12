@@ -43,7 +43,7 @@ DID URI состоит из 3 частей:
 
 Смарт-контракт DIDStorage служит интерфейсом для создания DID и поиска DID document по pubkey. Все действия по чтению, изменению и деактивации DID происходят в смарт-контракте DIDDocument, который создается для каждого DID и DIDDocument.
 
-Спецификацию всех функций контракта можно найти здесь: [src/docs/specification.md](./specification.md)
+Спецификацию всех функций контракта можно найти здесь: [docs/specification.md](./specification.md)
 
 ### Создать
 

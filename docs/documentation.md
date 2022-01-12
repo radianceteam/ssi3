@@ -38,6 +38,8 @@ DID URI состоит из 3 частей:
 
 ## The general scheme of relations
 
+![alt tag](https://docs.google.com/drawings/d/1nRf3QrBmO0NPYJdGrqpTJYSvAn8-xqTxorMgpOxiEV4/edit?usp=sharing)
+
 
 ## Операции CRUD
 

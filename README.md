@@ -40,6 +40,6 @@ DID document до изменения/после изменения
 
 **Title**: Описание функций контракта
 
-**Path**: [src/docs/specification.md](./src/docs/specification.md)
+**Path**: [src/docs/specification.md](./docs/specification.md)
 
 

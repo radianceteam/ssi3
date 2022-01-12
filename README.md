@@ -28,411 +28,631 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### Video help
 
-This video shows the entire user interface [video](https://youtu.be/L44vV8pkSN8)
+This video shows the entire user interface [video](https://youtu.be/X8HuIVbSZDc)
 
-## Authentication Requests
 
-### DEX Client Requests
+## Change of network
 
-### First Request
+To change the network from dev to main and backwards, you need to go to the config.js file
 
-DID is transferred to the request body, at the output we get the signature
-
-```
-fetch("https://ssi.defispace.com/auth", {
-			method: "post",
-			headers: {
-				"Content-Type": "application/json; charset=utf-8",
-				Connection: "keep-alive",
-			},
-
-			body: `{"user":{"did": "${tempDid}"}}`,
-		})
-			.then((response) => {
-				return response.json();
-			})
-			.then(async function (data) {
-				// data is the parsed version of the JSON returned from the above endpoint.
-				let msg = data.value;
-				//const msgHash = crypto.createHash('sha256').update(msg).digest('hex');
-				const msgHash = sha256(msg).toString();
-				console.log(msgHash);
-
-				let privatemsg = (await getClientKeys(seed)).secret;
-
-				console.log(privatemsg);
-
-				return await ed.sign(msgHash, privatemsg);
-			})
-			.then((data) => {
-				sendSign(data);
-			});
-```
-
-### Second Request
-
-A signature and a did are passed to the request body, and at the output we get a special token
+### dev network
 
 ```
-function sendSign(data) {
-			fetch("https://ssi.defispace.com/auth/login", {
-				method: "post",
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					Connection: "keep-alive",
-				},
-
-				body: `{
-					"user":
-					{
-						"signatureHex":"${data}",
-						"did": "${tempDid}"
-				}
-				}`,
-			})
-				.then((data) => {
-					return data.json();
-				})
-				.then((data) => {
-					testSign(data.token);
-				});
-		}
+{
+  "dexroot": "0:b199c648ae3f6d2b1a774d51f35b5af98a346672c91f1da9c1f1ba3a0a3d69d0",
+  "storageroot": "0:1f18747f268394007398024e6be2878e221fe931fe832df62033c538d091d0d5",
+  "DappServer": "net.ton.dev"
+}
 ```
 
-### Third Request
-
-Add a special token to the request header, if the entry is successful, then the request will return the same token, if the entry is unsuccessful, then the request will return an error
+### main network
 
 ```
-function testSign(data) {
-			fetch("https://ssi.defispace.com/auth/user", {
-				method: "get",
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					Connection: "keep-alive",
-					Authorization: `Token ${data}`,
-				},
-			})
-				.then((data) => {
-					return data.json();
-				})
-				.then((data) => {
-					if (data.token == undefined) {
-						alert("Login Error!");
-					} else {
-						console.log(data.token);
-						setRedirect(true);
+{
+    "dexroot": "0:e6bfca78593f25de9301de4f19ed798dce2210150c9c62437f192d00fb30ad31",
+    "storageroot": "0:26e01cf61fd79264c21b1085f3d5de0481024ce54bfaf9de6507b4731bf8c94d",
+    "DappServer": "main.ton.dev"
+}
+```
+
+## API methods
+
+### createDID3() dex
+
+Function for creating a DID, displays its identifier to the user
+
+```
+async function createDID3() {
+		let bal = getClientBalance(localStorage.address);
+
+		bal.then(
+			async (data) => {
+				if(data < 0.5){
+					alert("Insufficient balance");
+					return;
+				} else {
+
+					setLoader(true);
+
+					const acc = new Account(DEXClientContract, {
+						address: localStorage.address,
+						signer: signerKeys(await getClientKeys(sessionStorage.seed)),
+						client,
+					});
+
+					let pubkey = (await getClientKeys(seed)).public;
+
+					try {
+						const newDIDDoc = {
+							id: "did:everscale:" +pubkey.toString(),
+							//createdAt: new Date().getTime().toString(),
+							"@context": [
+								"https://www.w3.org/ns/did/v1",
+								"https://w3id.org/security/suites/ed25519-2020/v1",
+							],
+							publicKey: pubkey.toString(),
+							verificationMethod: {
+								id: "did:everscale:" +pubkey.toString(),
+								type: "Ed25519VerificationKey2020",
+								controller: "did:everscale:" +pubkey.toString(),
+								publicKeyMultibase: pubkey,
+							},
+						};
+
+						const {body} = await client.abi.encode_message_body({
+							abi: {type: "Contract", value: DidStorageContract.abi},
+							signer: {type: "None"},
+							is_internal: true,
+							call_set: {
+								function_name: "addDid",
+								input: {
+									pubKey: "0x" + pubkey,
+									didDocument: JSON.stringify(newDIDDoc),
+									addr: localStorage.address,
+								},
+							},
+						});
+
+						const res = await acc.run("sendTransaction", {
+							dest: dexrootAddr,
+							value: 500000000,
+							bounce: true,
+							flags: 3,
+							payload: body,
+						});
+
+						console.log(res);
+					} catch (e) {
+						console.log(e);
+						setLoader(false);
 					}
-				});
-		}
-```
 
-### Full function with requests
+					setTimeout(async function(){
+						const acc2 = new Account(DidStorageContract, {
+							address: dexrootAddr,
+							signer: signerNone(),
+							client,
+						});
+						const res2 = await acc2.runLocal("resolveDidDocument", {
+							id: "0x" + pubkey,
+						});
+				
+						console.log(res2);
+				
+						let addrDidDoc = res2.decoded.out_messages[0].value.addrDidDocument;
 
-```
-function testreq() {
-		let tempDid = DID.split(":")[2];
-		console.log(DID);
+						try{
 
-		function sendSign(data) {
-			fetch("https://ssi.defispace.com/auth/login", {
-				method: "post",
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					Connection: "keep-alive",
-				},
+							const accDid = new Account(DidDocumentContract, {
+								address: addrDidDoc,
+								signer: signerNone(),
+								client,
+							})
 
-				body: `{
-					"user":
-					{
-						"signatureHex":"${data}",
-						"did": "${tempDid}"
+							const resInit = await accDid.run("init", {
+								issuerAddr: localStorage.address
+							}, {
+								signer: signerKeys(await getClientKeys(sessionStorage.seed))
+							})
+
+							console.log(resInit);
+
+						} catch(e) {
+							console.log(e);
+							setLoader(false);
+							alert("Error!")
+							return;
+						}
+				
+						const didAcc = new Account(DidDocumentContract, {
+							address: addrDidDoc,
+							signer: signerNone(),
+							client,
+						});
+				
+						const resDid = await didAcc.runLocal("getDid", {});
+				
+						console.log(resDid.decoded.out_messages[0].value.value0);
+
+						let tempDoc = JSON.parse(resDid.decoded.out_messages[0].value.value0.didDocument);
+
+						let tempDid = tempDoc.id;
+
+						console.log(tempDoc);
+
+						console.log(tempDid);
+
+						setLoader(false);
+						setAlertW({
+							hidden: false,
+							text: "Your DID has been created: " + tempDid,
+							title: "Congratulations"
+						})
+					},20000);
 				}
-				}`,
-			})
-				.then((data) => {
-					return data.json();
-				})
-				.then((data) => {
-					testSign(data.token);
-				});
-		}
-
-		function testSign(data) {
-			fetch("https://ssi.defispace.com/auth/user", {
-				method: "get",
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					Connection: "keep-alive",
-					Authorization: `Token ${data}`,
-				},
-			})
-				.then((data) => {
-					return data.json();
-				})
-				.then((data) => {
-					if (data.token == undefined) {
-						alert("Login Error!");
-					} else {
-						console.log(data.token);
-						setRedirect(true);
-					}
-				});
-		}
-
-		fetch("https://ssi.defispace.com/auth", {
-			method: "post",
-			headers: {
-				"Content-Type": "application/json; charset=utf-8",
-				Connection: "keep-alive",
-			},
-
-			body: `{"user":{"did": "${tempDid}"}}`,
-		})
-			.then((response) => {
-				return response.json();
-			})
-			.then(async function (data) {
-				// data is the parsed version of the JSON returned from the above endpoint.
-				let msg = data.value;
-				//const msgHash = crypto.createHash('sha256').update(msg).digest('hex');
-				const msgHash = sha256(msg).toString();
-				console.log(msgHash);
-
-				let privatemsg = (await getClientKeys(seed)).secret;
-
-				console.log(privatemsg);
-
-				return await ed.sign(msgHash, privatemsg);
-			})
-			.then((data) => {
-				sendSign(data);
-			});
+			}
+		);
 	}
 ```
 
-### Ever Wallet Requests
+### resolveDID() dex
 
-The same requests for the ever wallet
-
-### First Request
+A function that retrieves a DID document and displays it to the user
 
 ```
-fetch("https://ssi.defispace.com/auth", {
-			method: "post",
-			headers: {
-				"Content-Type": "application/json; charset=utf-8",
-				Connection: "keep-alive",
-			},
-
-			body: `{"user":{"did": "${tempDid}"}}`,
-		})
-			.then((response) => {
-				return response.json();
-			})
-			.then(async function (data) {
-				// data is the parsed version of the JSON returned from the above endpoint.
-				let msg = data.value;
-				console.log(msg);
-				//const msgHash = crypto.createHash('sha256').update(msg).digest('hex');
-				//const msgHash = sha256(msg).toString(16);
-
-				const msgHash = window.btoa(msg);
-				console.log(msgHash);
-
-				//let privatemsg = (await getClientKeys(seed)).secret;
-
-				let signData = await ton.rawApi.signData({
-					data: msgHash,
-					publicKey: accountInteraction.publicKey,
-				});
-
-				console.log(signData);
-
-				return signData.signatureHex;
-			})
-			.then((data) => {
-				sendSign(data);
-				console.log(data);
-			});
-```
-
-### Second Request
-
-```
-function sendSign(data) {
-			fetch("https://ssi.defispace.com/auth/login", {
-				method: "post",
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					Connection: "keep-alive",
-				},
-
-				body: `{
-					"user":
-					{
-						"signatureHex":"${data}",
-						"did": "${tempDid}"
-				}
-				}`,
-			})
-				.then((data) => {
-					return data.json();
-				})
-				.then((data) => {
-					testSign(data.token);
-				});
-		}
-```
-
-### Third Request
-
-```
-function testSign(data) {
-			fetch("https://ssi.defispace.com/auth/user", {
-				method: "get",
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					Connection: "keep-alive",
-					Authorization: `Token ${data}`,
-				},
-			})
-				.then((data) => {
-					return data.json();
-				})
-				.then(
-					(data) => {
-						console.log(data);
-						if (data.token == undefined) {
-							alert("Error Log In");
-							return;
-						} else {
-							console.log(data.token);
-							setRedirect(true);
-						}
-					},
-					(error) => {
-						console.log(error);
-					},
-				);
-		}
-```
-
-### Full function with requests
-
-```
-async function testreq() {
-		let tempDid = DID.split(":")[2];
+async function resolveDID() {
+		let tempDid = DID.split(':')[2];
 		console.log(DID);
+		
 
-		console.log("initInpageProvider...");
+		setLoader(true);
 
-		const provider = await import("ton-inpage-provider");
-		if (!(await provider.hasTonProvider())) {
-			throw new Error("Extension is not installed");
-		}
-
-		await ton.ensureInitialized();
-
-		const {accountInteraction} = await ton.rawApi.requestPermissions({
-			permissions: ["tonClient", "accountInteraction"],
+		const acc = new Account(DEXClientContract, {
+			address: localStorage.address,
+			signer: signerKeys(await getClientKeys(sessionStorage.seed)),
+			client,
 		});
 
-		console.log(accountInteraction);
+		const acc2 = new Account(DidStorageContract, {
+			address: dexrootAddr,
+			signer: signerNone(),
+			client,
+		});
 
-		if (accountInteraction == null) {
-			throw new Error("Insufficient permissions");
-		}
+		let res2;
 
-		function sendSign(data) {
-			fetch("https://ssi.defispace.com/auth/login", {
-				method: "post",
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					Connection: "keep-alive",
-				},
-
-				body: `{
-					"user":
-					{
-						"signatureHex":"${data}",
-						"did": "${tempDid}"
-				}
-				}`,
-			})
-				.then((data) => {
-					return data.json();
-				})
-				.then((data) => {
-					testSign(data.token);
-				});
-		}
-
-		function testSign(data) {
-			fetch("https://ssi.defispace.com/auth/user", {
-				method: "get",
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					Connection: "keep-alive",
-					Authorization: `Token ${data}`,
-				},
-			})
-				.then((data) => {
-					return data.json();
-				})
-				.then(
-					(data) => {
-						console.log(data);
-						if (data.token == undefined) {
-							alert("Error Log In");
-							return;
-						} else {
-							console.log(data.token);
-							setRedirect(true);
-						}
-					},
-					(error) => {
-						console.log(error);
-					},
-				);
-		}
-
-		fetch("https://ssi.defispace.com/auth", {
-			method: "post",
-			headers: {
-				"Content-Type": "application/json; charset=utf-8",
-				Connection: "keep-alive",
-			},
-
-			body: `{"user":{"did": "${tempDid}"}}`,
-		})
-			.then((response) => {
-				return response.json();
-			})
-			.then(async function (data) {
-				// data is the parsed version of the JSON returned from the above endpoint.
-				let msg = data.value;
-				console.log(msg);
-				//const msgHash = crypto.createHash('sha256').update(msg).digest('hex');
-				//const msgHash = sha256(msg).toString(16);
-
-				const msgHash = window.btoa(msg);
-				console.log(msgHash);
-
-				//let privatemsg = (await getClientKeys(seed)).secret;
-
-				let signData = await ton.rawApi.signData({
-					data: msgHash,
-					publicKey: accountInteraction.publicKey,
-				});
-
-				console.log(signData);
-
-				return signData.signatureHex;
-			})
-			.then((data) => {
-				sendSign(data);
-				console.log(data);
+		try{
+			res2 = await acc2.runLocal("resolveDidDocument", {
+				id: "0x" + tempDid,
 			});
+		} catch {
+			setLoader(false);
+			alert("Incorrect format DID");
+			return;
+		}
+
+		console.log(res2);
+
+		let addrDidDoc = res2.decoded.out_messages[0].value.addrDidDocument;
+
+		try{
+			const didAcc = new Account(DidDocumentContract, {
+				address: addrDidDoc,
+				signer: signerNone(),
+				client,
+			});
+	
+			const resDid = await didAcc.runLocal("getDid", {});
+
+			setLoader(false);
+			setDidDoc(resDid.decoded.out_messages[0].value.value0);
+			console.log(resDid.decoded.out_messages[0].value.value0);
+		} catch(e) {
+			console.log(e);
+			setLoader(false);
+			alert("Error! \n Possible reasons: \n - Wrong DID \n - This DID has been deleted");
+		}
+
+		
 	}
 ```
+
+### updateDIDDocument() dex
+
+Function for updating the parameters of the DID document
+
+```
+async function updateDIDDocument() {
+		let tempDid = DID.split(':')[2];
+		console.log(DID);
+
+		setLoader(true);
+
+		const acc = new Account(DEXClientContract, {
+			address: localStorage.address,
+			signer: signerKeys(await getClientKeys(sessionStorage.seed)),
+			client,
+		});
+
+		let pubkey = (await getClientKeys(seed)).public;
+
+		const acc2 = new Account(DidStorageContract, {
+			address: dexrootAddr,
+			signer: signerNone(),
+			client,
+		});
+
+		const res2 = await acc2.runLocal("resolveDidDocument", {
+			id: "0x" + tempDid,
+		});
+
+		console.log(res2);
+
+		let addrDidDoc = res2.decoded.out_messages[0].value.addrDidDocument;
+
+		const didAcc = new Account(DidDocumentContract, {
+			address: addrDidDoc,
+			signer: signerNone(),
+			client,
+		});
+
+		console.log(JSON.stringify(didDoc.didDocument));
+
+		try {
+			const {body} = await client.abi.encode_message_body({
+				abi: {type: "Contract", value: DidDocumentContract.abi},
+				signer: {type: "None"},
+				is_internal: true,
+				call_set: {
+					function_name: "newDidDocument",
+					input: {
+						didDocument: didDoc.didDocument,
+					},
+				},
+			});
+
+			const res = await acc.run("sendTransaction", {
+				dest: addrDidDoc,
+				value: 300000000,
+				bounce: true,
+				flags: 3,
+				payload: body,
+			});
+
+			console.log(res);
+		} catch (e) {
+			console.log(e);
+		}
+
+		setTimeout(async function(){
+			try{
+				const resDid = await didAcc.runLocal("getDid", {});
+
+				setDidDoc(resDid.decoded.out_messages[0].value.value0);
+				console.log(resDid.decoded.out_messages[0].value.value0);
+				setLoader(false);
+			} catch(e) {
+				console.log(e);
+				alert("Error!");
+				setLoader(false);
+				
+			}
+		},20000)
+	}
+```
+
+### updateDidStatus() dex
+
+Function to update the status of a DID document
+
+```
+async function updateDidStatus() {
+
+		if(curentStatus == undefined) {
+			alert("Set status");
+			return;
+		}
+
+		let tempDid = DID.split(':')[2];
+		console.log(DID);
+
+		let bal = getClientBalance(localStorage.address);
+
+		bal.then(
+			async (data) => {
+				if(data < 1){
+					alert("Insufficient balance");
+					return;
+				} else {
+
+					setLoader(true);
+
+					const acc = new Account(DEXClientContract, {
+						address: localStorage.address,
+						signer: signerKeys(await getClientKeys(sessionStorage.seed)),
+						client,
+					});
+
+					let pubkey = (await getClientKeys(seed)).public;
+
+					const acc2 = new Account(DidStorageContract, {
+						address: dexrootAddr,
+						signer: signerNone(),
+						client,
+					});
+
+					const res2 = await acc2.runLocal("resolveDidDocument", {
+						id: "0x" + tempDid,
+					});
+
+					console.log(res2);
+
+					let addrDidDoc = res2.decoded.out_messages[0].value.addrDidDocument;
+
+					const didAcc = new Account(DidDocumentContract, {
+						address: addrDidDoc,
+						signer: signerNone(),
+						client,
+					});
+
+					try {
+
+						const {body} = await client.abi.encode_message_body({
+							abi: {type: "Contract", value: DidDocumentContract.abi},
+							signer: {type: "None"},
+							is_internal: true,
+							call_set: {
+								function_name: "newDidStatus",
+								input: {
+									status: Number(curentStatus),
+								},
+							},
+						});
+
+						const res = await acc.run("sendTransaction", {
+							dest: addrDidDoc,
+							value: 300000000,
+							bounce: true,
+							flags: 3,
+							payload: body,
+						});
+
+						console.log(res);
+					} catch (e) {
+						console.log(e);
+					}
+
+					setTimeout(async function(){
+						const resDid = await didAcc.runLocal("getDid", {});
+
+						setDidDoc(resDid.decoded.out_messages[0].value.value0);
+						console.log(resDid.decoded.out_messages[0].value.value0);
+						setLoader(false);
+					}, 20000);
+
+				}
+			}
+		);
+	}
+```
+
+### updateDidPub() dex
+
+Function to update the controller DID document
+
+```
+async function updateDidPub() {
+
+		if(curentAddr == undefined) {
+			alert("Set Address");
+			return;
+		}
+
+		let tempDid = DID.split(':')[2];
+		console.log(DID);
+
+		console.log(curentPub, curentAddr);
+
+		let bal = getClientBalance(localStorage.address);
+
+		bal.then(
+			async (data) => {
+				if(data < 1){
+					alert("Insufficient balance");
+					return;
+				} else {
+
+					setLoader(true);
+
+					const acc = new Account(DEXClientContract, {
+						address: localStorage.address,
+						signer: signerKeys(await getClientKeys(sessionStorage.seed)),
+						client,
+					});
+
+					let pubkey = (await getClientKeys(seed)).public;
+
+					const acc2 = new Account(DidStorageContract, {
+						address: dexrootAddr,
+						signer: signerNone(),
+						client,
+					});
+
+					const res2 = await acc2.runLocal("resolveDidDocument", {
+						id: "0x" + tempDid,
+					});
+
+					console.log(res2);
+
+					let addrDidDoc = res2.decoded.out_messages[0].value.addrDidDocument;
+
+					const didAcc = new Account(DidDocumentContract, {
+						address: addrDidDoc,
+						signer: signerNone(),
+						client,
+					});
+
+					try {
+
+						const {body} = await client.abi.encode_message_body({
+							abi: {type: "Contract", value: DidDocumentContract.abi},
+							signer: {type: "None"},
+							is_internal: true,
+							call_set: {
+								function_name: "newDidIssuerAddr",
+								input: {
+									issuerAddr: curentAddr
+								},
+							},
+						});
+
+						const res = await acc.run("sendTransaction", {
+							dest: addrDidDoc,
+							value: 300000000,
+							bounce: true,
+							flags: 3,
+							payload: body,
+						});
+
+						console.log(res);
+					} catch (e) {
+						console.log(e);
+						setLoader(false);
+						return;
+					}
+
+					setTimeout(async function(){
+						try{
+							const resDid = await didAcc.runLocal("getDid", {});
+
+							setDidDoc(resDid.decoded.out_messages[0].value.value0);
+							console.log(resDid.decoded.out_messages[0].value.value0);
+							setLoader(false);
+						} catch(e) {
+							console.log(e);
+							alert("Error!");
+							setLoader(false);
+						}
+					}, 20000);
+
+				}
+			}
+		);
+	}
+```
+
+### deleteDid() dex
+
+Function to delete DID documewnt
+
+```
+async function deleteDid() {
+
+		let tempDid = DID.split(':')[2];
+		console.log(DID);
+
+		let bal = getClientBalance(localStorage.address);
+
+		bal.then(
+			async (data) => {
+				if(data < 1){
+					alert("Insufficient balance");
+					return;
+				} else {
+
+					setLoader(true);
+
+					const acc = new Account(DEXClientContract, {
+						address: localStorage.address,
+						signer: signerKeys(await getClientKeys(sessionStorage.seed)),
+						client,
+					});
+
+					let pubkey = (await getClientKeys(seed)).public;
+
+					const acc2 = new Account(DidStorageContract, {
+						address: dexrootAddr,
+						signer: signerNone(),
+						client,
+					});
+
+					const res2 = await acc2.runLocal("resolveDidDocument", {
+						id: "0x" + tempDid,
+					});
+
+					console.log(res2);
+
+					let addrDidDoc = res2.decoded.out_messages[0].value.addrDidDocument;
+
+					const didAcc = new Account(DidDocumentContract, {
+						address: addrDidDoc,
+						signer: signerNone(),
+						client,
+					});
+
+					//console.log(JSON.stringify(didDoc.didDocument));
+
+					try {
+
+						const {body} = await client.abi.encode_message_body({
+							abi: {type: "Contract", value: DidDocumentContract.abi},
+							signer: {type: "None"},
+							is_internal: true,
+							call_set: {
+								function_name: "deleteDidDocument",
+								input: {},
+							},
+						});
+
+						const res = await acc.run("sendTransaction", {
+							dest: addrDidDoc,
+							value: 300000000,
+							bounce: true,
+							flags: 3,
+							payload: body,
+						});
+
+						console.log(res);
+					} catch (e) {
+						console.log(e);
+						setLoader(false);
+						return;
+					}
+
+					setTimeout(async function(){
+						console.log(1);
+						// const resDid = await didAcc.runLocal("getDid", {});
+
+						// setDidDoc(resDid.decoded.out_messages[0].value.value0);
+						// console.log(resDid.decoded.out_messages[0].value.value0);
+
+						const res3 = await acc2.runLocal("resolveDidDocument", {
+							id: "0x" + tempDid,
+						});
+				
+						console.log(res3);
+
+						try {
+							const resDid = await didAcc.runLocal("getDid", {});
+
+							setDidDoc(resDid.decoded.out_messages[0].value.value0);
+							console.log(resDid.decoded.out_messages[0].value.value0);
+						} catch(e) {
+							backToLogin();
+							setLoader(false);
+							alert("Did doc delete");
+						}
+
+						setLoader(false);
+					}, 20000);
+
+				}
+			}
+		);
+	}
+}
+```
+
+### Function for ever wallet
+
+You can find the same functions for the ever wallet in the file WelcomeDidPageEver.js

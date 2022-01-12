@@ -1,17 +1,10 @@
 import React, {useState} from "react";
-import {Redirect} from "react-router-dom";
+import { Redirect } from 'react-router-dom';
 import backspace from "./img/backspace.png";
-//import crypto from 'crypto'
-//import {genSeed, genKeys} from "../sdk";
 import {Account} from "@tonclient/appkit";
 import {libWeb} from "@tonclient/lib-web";
 
 import {signerKeys} from "@tonclient/core";
-
-//import {DEXClientContract} from "../extensions/contracts/testNet/DEXClientMainNetContract.js";
-// import {DEXRootContract} from "../extensions/contracts/testNet/DEXRootContract.js";
-// import {DEXConnectorContract} from "../extensions/contracts/testNet/DEXConnectorContract.js";
-// import {TONTokenWalletContract} from "../extensions/contracts/testNet/TONTokenWalletContract.js";
 
 import {DEXClientContract} from "../extensions/contracts/mainNet/DEXClient.js";
 import {DEXRootContract} from "../extensions/contracts/mainNet/DEXRoot.js";
@@ -20,14 +13,14 @@ import {TONTokenWalletContract} from "../extensions/contracts/mainNet/TONTokenWa
 
 import {Address, ProviderRpcClient, TvmException} from "ton-inpage-provider";
 
+const config = require('./config.json');
+
 const {TonClient} = require("@tonclient/core");
 
 TonClient.useBinaryLibrary(libWeb);
 
-const client = new TonClient({network: {endpoints: ["main.ton.dev"]}});
-// const client = new TonClient({network: {endpoints: ["main.ton.dev"]}});
+const client = new TonClient({network: {endpoints: [config.DappServer]}});
 
-//const bip39 = require('bip39');
 const pidCrypt = require("pidcrypt");
 require("pidcrypt/aes_cbc");
 
@@ -67,11 +60,16 @@ function ConnectWalletPage() {
 	let pass = "";
 	let mnemonic = "";
 
+	// main net
 	// let dexrootAddr =
-	// 	"0:fa31b7395fe161aea6f193cfe1bbfd147faf004f996c624ba52c95f8fe64502f";
-	let dexrootAddr =
-		"0:e6bfca78593f25de9301de4f19ed798dce2210150c9c62437f192d00fb30ad31";
-	//let dexrootAddr = "0:5d0f5a8cb443e00934d1bb632acadc036a6c41b59308e3a36d809449a5e777d9";
+	// 	"0:e6bfca78593f25de9301de4f19ed798dce2210150c9c62437f192d00fb30ad31";
+
+	// dev net
+	// let dexrootAddr =
+	// 	"0:b199c648ae3f6d2b1a774d51f35b5af98a346672c91f1da9c1f1ba3a0a3d69d0";
+
+	let dexrootAddr = config.dexroot;
+	
 	const zeroAddress =
 		"0:0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -111,7 +109,7 @@ function ConnectWalletPage() {
 		let encrypted = aes.encryptText(mnemonic, pin);
 		console.log(encrypted);
 
-		localStorage.setItem("seedHash", encrypted);
+		sessionStorage.setItem("seedHash", encrypted);
 
 		setSeed(mnemonic);
 	}
@@ -428,7 +426,6 @@ function ConnectWalletPage() {
 		if (curentPageLogin === 1) {
 			if (seedLogin !== "") {
 				setCurentPageLogin(curentPageLogin + 1);
-				sessionStorage.setItem("seed", seedLogin);
 			} else {
 				setErrorModal([
 					{
@@ -448,9 +445,11 @@ function ConnectWalletPage() {
 				let temp = [inputL1, inputL2, inputL3, inputL4];
 				let pass = temp.join("");
 
+				let trim = seedLogin.trim();
+
 				setLoader(true);
 
-				let promiseKeys = getClientKeys(seedLogin);
+				let promiseKeys = getClientKeys(trim);
 				promiseKeys.then(
 					(data) => {
 						let addr = data.public;
@@ -467,10 +466,15 @@ function ConnectWalletPage() {
 								promiseAcc.then(
 									(data) => {
 										let acc = data.acc_type;
-
+										console.log(acc);
 										if (acc === 1) {
 											setLoader(false);
-											localStorage.setItem("address", addr);
+
+											let encrypted = aes.encryptText(trim, pass);
+
+											sessionStorage.setItem("seedHash", encrypted);
+
+											sessionStorage.setItem("address", addr);
 
 											setCurentPageLogin(curentPageLogin + 1);
 										} else {
@@ -652,7 +656,7 @@ function ConnectWalletPage() {
 		bal.then(
 			(data) => {
 				//console.log(bal);
-				if (data > 1) {
+				if (data > 0.4) {
 					setLoader(false);
 					// сделать проверку на выдаваемый результат deployClient, если произойдет ошибка
 					deployClient(clientData[0], clientData[1]);
@@ -716,16 +720,14 @@ function ConnectWalletPage() {
 					<span></span>
 					<span></span>
 				</button> */}
-				<div className="title">
-					To continue, connect the wallet using one of the presented methods
-				</div>
+				<div className="title">Welcome to DefiSpace!</div>
 				<div className="content content-first">
 					<button className="connect-btn zeropage-btn" onClick={NextPageLogin}>
-						Connect Dex Wallet
+						Log In
 					</button>
-					{/* <button className="connect-btn zeropage-btn" onClick={NextPage}>
+					<button className="connect-btn zeropage-btn" onClick={NextPage}>
 						Sign Up
-					</button> */}
+					</button>
 
 					<button className="connect-btn zeropage-btn" onClick={connectWallet}>
 						Connect TON Crystal Wallet
@@ -1089,7 +1091,7 @@ function ConnectWalletPage() {
 						</button>
 					</a>
 				</div>
-				{connectEver ? <Redirect to="/welcome-did-ever" /> : null}
+				{connectEver?<Redirect to="/welcome-did-ever"/>:null}
 			</div>
 		</div>
 	);

@@ -63,7 +63,21 @@ function WelcomeDidPageHeader() {
 
 	return (
 		<div className="acc-info">
-			<a href="#/connect-wallet">Log In</a>
+			{/* <div className="balance">
+				<div className="bal">{bal} TON</div>
+				<button className="refresh-bal" onClick={refreshBal}>
+					<img src={refresh}></img>
+				</button>
+			</div> */}
+			<div className="acc">
+				<div className="acc-logo"></div>
+
+				<div className="content">
+					<div className="acc-status">Connected</div>
+					<div className="break"></div>
+					<div className="acc-wallet">{localStorage.address}</div>
+				</div>
+			</div>
 		</div>
 	);
 }

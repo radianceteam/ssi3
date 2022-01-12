@@ -37,8 +37,6 @@ import LoginDidPage from "./sdk/LoginDidPage";
 import LoginPage from "./sdk/LoginPage";
 import AppPage from "./sdk/AppPage";
 import WelcomeDidPageEver from "./sdk/WelcomeDidPageEver";
-import CinemaPage from "./sdk/CinemaPage";
-import StartPage from "./sdk/StartPage";
 
 import Header from "./sdk/Header";
 
@@ -167,22 +165,13 @@ function App() {
 				<div className="App">
 					<Header></Header>
 					<Switch>
-						<Route exact path="/" component={StartPage}></Route>
-						<Route
-							exact
-							path="/connect-wallet"
-							component={ConnectWalletPage}
-						></Route>
+						<Route exact path="/" component={ConnectWalletPage}></Route>
 						{/* <Route exact path="/connect-wallet" component={ConnectWalletPage}></Route> */}
 						<Route exact path="/welcome-did" component={WelcomeDidPage}></Route>
 						<Route exact path="/login-did" component={LoginDidPage}></Route>
 						<Route exact path="/login" component={LoginPage}></Route>
-						<Route exact path="/app" component={CinemaPage}></Route>
-						<Route
-							exact
-							path="/welcome-did-ever"
-							component={WelcomeDidPageEver}
-						></Route>
+						<Route exact path="/app" component={AppPage}></Route>
+						<Route exact path="/welcome-did-ever" component={WelcomeDidPageEver}></Route>
 					</Switch>
 				</div>
 			</Context.Provider>

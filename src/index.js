@@ -9,7 +9,6 @@ import {SnackbarProvider} from "notistack";
 import {StyledEngineProvider} from "@mui/material/styles";
 
 import "./index.scss";
-import "./sdk/css/style-starter.scss";
 import "bootstrap";
 import App from "./App";
 

@@ -28,7 +28,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### Video help
 
-This video shows the entire user interface [video](https://youtu.be/X8HuIVbSZDc)
+This video shows the entire user interface [video](https://youtu.be/3NXLzTWBEqU)
 
 
 ## Change of network
@@ -40,7 +40,7 @@ To change the network from dev to main and backwards, you need to go to the conf
 ```
 {
   "dexroot": "0:b199c648ae3f6d2b1a774d51f35b5af98a346672c91f1da9c1f1ba3a0a3d69d0",
-  "storageroot": "0:1f18747f268394007398024e6be2878e221fe931fe832df62033c538d091d0d5",
+  "storageroot": "0:fc591b0d9200925aa7b4db8e6a8ab5515ef10818949b836c0e5b2ca26d558a35",
   "DappServer": "net.ton.dev"
 }
 ```
@@ -50,7 +50,7 @@ To change the network from dev to main and backwards, you need to go to the conf
 ```
 {
     "dexroot": "0:e6bfca78593f25de9301de4f19ed798dce2210150c9c62437f192d00fb30ad31",
-    "storageroot": "0:26e01cf61fd79264c21b1085f3d5de0481024ce54bfaf9de6507b4731bf8c94d",
+    "storageroot": "0:f8d58bde0f6b1fbc647f534a5a81e8b5fa8d3553ebe1ee96fd87285a20bf5ea6",
     "DappServer": "main.ton.dev"
 }
 ```

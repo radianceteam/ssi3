@@ -6,10 +6,15 @@ import {libWeb} from "@tonclient/lib-web";
 
 import {signerKeys} from "@tonclient/core";
 
-import {DEXClientContract} from "../extensions/contracts/mainNet/DEXClient.js";
-import {DEXRootContract} from "../extensions/contracts/mainNet/DEXRoot.js";
-import {DEXConnectorContract} from "../extensions/contracts/mainNet/DEXConnector.js";
-import {TONTokenWalletContract} from "../extensions/contracts/mainNet/TONTokenWallet.js";
+// import {DEXClientContract} from "../extensions/contracts/mainNet/DEXClient.js";
+// import {DEXRootContract} from "../extensions/contracts/mainNet/DEXRoot.js";
+// import {DEXConnectorContract} from "../extensions/contracts/mainNet/DEXConnector.js";
+// import {TONTokenWalletContract} from "../extensions/contracts/mainNet/TONTokenWallet.js";
+
+import {DEXClientContract} from "../extensions/contracts/main/DEXClient.js";
+import {DEXRootContract} from "../extensions/contracts/main/DEXRoot.js";
+import {DEXConnectorContract} from "../extensions/contracts/main/DEXConnector.js";
+import {TONTokenWalletContract} from "../extensions/contracts/main/TONTokenWallet.js";
 
 import {Address, ProviderRpcClient, TvmException} from "ton-inpage-provider";
 
@@ -373,7 +378,7 @@ function ConnectWalletPage() {
 			setCurentPage(curentPage + 1);
 			console.log(seed);
 			setLoader(true);
-			console.log(prepareClientDataForDeploy(seed));
+			prepareClientDataForDeploy(seed);
 			console.log(addr);
 			console.log(loader);
 		}
@@ -656,13 +661,25 @@ function ConnectWalletPage() {
 		bal.then(
 			(data) => {
 				//console.log(bal);
-				if (data > 0.4) {
+				if (data >= 0.4) {
 					setLoader(false);
 					// сделать проверку на выдаваемый результат deployClient, если произойдет ошибка
+					// console.log(clientData[0], clientData[1]);
+					// let cl1 = {data:{
+					// 	address: "0:e6a0f45b9887de9ecdf04ac3e3febeba237586d711fa9f16d5625cdb337e1ee6",
+					// 	clientSoArg: 0,
+					// 	keys: "0x7d1cfe1421adfb7a78eb34bbc36f65171cedb6430b1c0012be0113e7e5ba8e41"
+					// },status: true}
+
+					// let cl2 = {
+					// 	public: "7d1cfe1421adfb7a78eb34bbc36f65171cedb6430b1c0012be0113e7e5ba8e41",
+					// 	secret: "fdd3dda0d24664e225b970cfea93b6fef6a3ee13935e59654bcf877411484412"}
 					deployClient(clientData[0], clientData[1]);
+					// deployClient(cl1,cl2);
 					setCurentPage(curentPage + 1);
 				} else {
 					setLoader(false);
+					console.log(clientData[0], clientData[1]);
 					setErrorModal([
 						{
 							hidden: true,
@@ -730,7 +747,7 @@ function ConnectWalletPage() {
 					</button>
 
 					<button className="connect-btn zeropage-btn" onClick={connectWallet}>
-						Connect TON Crystal Wallet
+						Connect TON Ever Wallet
 					</button>
 				</div>
 			</div>

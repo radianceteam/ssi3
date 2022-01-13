@@ -13,10 +13,15 @@ import {signerKeys} from "@tonclient/core";
 // import {DEXConnectorContract} from "../extensions/contracts/testNet/DEXConnectorContract.js";
 // import {TONTokenWalletContract} from "../extensions/contracts/testNet/TONTokenWalletContract.js";
 
-import {DEXClientContract} from "../extensions/contracts/mainNet/DEXClient.js";
-import {DEXRootContract} from "../extensions/contracts/mainNet/DEXRoot.js";
-import {DEXConnectorContract} from "../extensions/contracts/mainNet/DEXConnector.js";
-import {TONTokenWalletContract} from "../extensions/contracts/mainNet/TONTokenWallet.js";
+// import {DEXClientContract} from "../extensions/contracts/mainNet/DEXClient.js";
+// import {DEXRootContract} from "../extensions/contracts/mainNet/DEXRoot.js";
+// import {DEXConnectorContract} from "../extensions/contracts/mainNet/DEXConnector.js";
+// import {TONTokenWalletContract} from "../extensions/contracts/mainNet/TONTokenWallet.js";
+
+import {DEXClientContract} from "../extensions/contracts/main/DEXClient.js";
+import {DEXRootContract} from "../extensions/contracts/main/DEXRoot.js";
+import {DEXConnectorContract} from "../extensions/contracts/main/DEXConnector.js";
+import {TONTokenWalletContract} from "../extensions/contracts/main/TONTokenWallet.js";
 
 import {Address, ProviderRpcClient, TvmException} from "ton-inpage-provider";
 
@@ -25,9 +30,8 @@ const {TonClient} = require("@tonclient/core");
 TonClient.useBinaryLibrary(libWeb);
 
 const client = new TonClient({network: {endpoints: ["main.ton.dev"]}});
-// const client = new TonClient({network: {endpoints: ["main.ton.dev"]}});
+// const client = new TonClient({network: {endpoints: ["net.ton.dev"]}});
 
-//const bip39 = require('bip39');
 const pidCrypt = require("pidcrypt");
 require("pidcrypt/aes_cbc");
 
@@ -67,11 +71,13 @@ function ConnectWalletPage() {
 	let pass = "";
 	let mnemonic = "";
 
-	// let dexrootAddr =
-	// 	"0:fa31b7395fe161aea6f193cfe1bbfd147faf004f996c624ba52c95f8fe64502f";
+	// main net
 	let dexrootAddr =
 		"0:e6bfca78593f25de9301de4f19ed798dce2210150c9c62437f192d00fb30ad31";
-	//let dexrootAddr = "0:5d0f5a8cb443e00934d1bb632acadc036a6c41b59308e3a36d809449a5e777d9";
+
+	// net ton dev
+	// let dexrootAddr = "0:b199c648ae3f6d2b1a774d51f35b5af98a346672c91f1da9c1f1ba3a0a3d69d0";
+
 	const zeroAddress =
 		"0:0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -730,6 +736,12 @@ function ConnectWalletPage() {
 					<button className="connect-btn zeropage-btn" onClick={connectWallet}>
 						Connect TON Crystal Wallet
 					</button>
+
+					<a href="#/login-qr">
+						<button className="connect-btn zeropage-btn">
+							Log in with a QR code
+						</button>
+					</a>
 				</div>
 			</div>
 			<div

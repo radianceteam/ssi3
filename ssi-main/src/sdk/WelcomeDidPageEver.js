@@ -234,7 +234,7 @@ function WelcomeDidPage() {
 				console.log(restest);
 			} catch(e) {
 				console.log(e);
-				alert("Error!");
+				alert("Error Init!");
 				setLoader(false);
 				return;
 			}

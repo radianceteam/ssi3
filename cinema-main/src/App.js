@@ -39,6 +39,7 @@ import AppPage from "./sdk/AppPage";
 import WelcomeDidPageEver from "./sdk/WelcomeDidPageEver";
 import CinemaPage from "./sdk/CinemaPage";
 import StartPage from "./sdk/StartPage";
+import LoginQrPage from "./sdk/LoginQrPage";
 
 import Header from "./sdk/Header";
 
@@ -175,6 +176,7 @@ function App() {
 						></Route>
 						{/* <Route exact path="/connect-wallet" component={ConnectWalletPage}></Route> */}
 						<Route exact path="/welcome-did" component={WelcomeDidPage}></Route>
+						<Route exact path="/login-qr" component={LoginQrPage}></Route>
 						<Route exact path="/login-did" component={LoginDidPage}></Route>
 						<Route exact path="/login" component={LoginPage}></Route>
 						<Route exact path="/app" component={CinemaPage}></Route>

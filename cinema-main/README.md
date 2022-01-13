@@ -28,7 +28,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### Video help
 
-This video shows the entire user interface [video](https://youtu.be/L44vV8pkSN8)
+This video shows the entire user interface [video](https://www.youtube.com/watch?v=EkQcbf4sxE4)
 
 ## Authentication Requests
 

@@ -88,6 +88,8 @@ function WelcomeDidPage() {
 
 	async function getClientKeys(phrase) {
 		//todo change with only pubkey returns
+		console.log(phrase);
+
 		let test = await client.crypto.mnemonic_derive_sign_keys({
 			phrase,
 			path: "m/44'/396'/0'/0/0",
@@ -113,7 +115,7 @@ function WelcomeDidPage() {
 	// 	});
 	// });
 
-	function decryptSeed(pin, func) {
+	function decryptSeed(pin) {
 
 		var decrypted = aes.decryptText(sessionStorage.seedHash, pin);
 
@@ -140,7 +142,6 @@ function WelcomeDidPage() {
 			}
 		}
 
-		func();
 		return decrypted;
 
 	}
@@ -177,11 +178,13 @@ function WelcomeDidPage() {
 
 		let pass = prompt("Enter your PIN");
 
-		let seed = decryptSeed(pass, create);
+		let seed = decryptSeed(pass);
 
 		if(!seed){
 			return;
 		}
+
+		create();
 
 		async function create() {
 			let bal = getClientBalance(sessionStorage.address);
@@ -313,7 +316,7 @@ function WelcomeDidPage() {
 							} catch(e) {
 								console.log(e);
 								setLoader(false);
-								alert("Error!")
+								alert("Error Init!")
 								return;
 							}
 					
@@ -407,11 +410,15 @@ function WelcomeDidPage() {
 		
 		let pass = prompt("Enter your PIN");
 
-		let seed = decryptSeed(pass, temp);
+		let seed = decryptSeed(pass);
 
 		if(!seed) {
 			return;
 		}
+
+		console.log(seed);
+
+		temp();
 
 		async function temp() {
 			let tempDid = DID.split(':')[2];
@@ -419,13 +426,16 @@ function WelcomeDidPage() {
 
 			setLoader(true);
 
+
+			let keys = await getClientKeys(seed);
+
 			const acc = new Account(DEXClientContract, {
 				address: sessionStorage.address,
-				signer: signerKeys(await getClientKeys(seed)),
+				signer: signerKeys(keys),
 				client,
 			});
 
-			let pubkey = (await getClientKeys(seed)).public;
+			console.log(2);
 
 			const acc2 = new Account(DidStorageContract, {
 				address: dexrootAddr,
@@ -563,11 +573,13 @@ function WelcomeDidPage() {
 
 		let pass = prompt("Enter your PIN");
 
-		let seed = decryptSeed(pass, temp);
+		let seed = decryptSeed(pass);
 
 		if(!seed) {
 			return;
 		}
+
+		temp();
 
 		async function temp() {
 	
@@ -666,12 +678,13 @@ function WelcomeDidPage() {
 
 		let pass = prompt("Enter your PIN");
 
-		let seed = decryptSeed(pass, temp);
+		let seed = decryptSeed(pass);
 
 		if(!seed) {
 			return;
 		}
 
+		temp();
 
 		async function temp() {
 			if(curentAddr == undefined) {
@@ -776,11 +789,13 @@ function WelcomeDidPage() {
 
 		let pass = prompt("Enter your PIN");
 
-		let seed = decryptSeed(pass, temp);
+		let seed = decryptSeed(pass);
 
 		if(!seed) {
 			return;
 		}
+
+		temp();
 
 		async function temp() {
 			let tempDid = DID.split(':')[2];

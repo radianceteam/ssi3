@@ -25,18 +25,17 @@ import sha256 from "crypto-js/sha256";
 //const {TonClient} = require("@tonclient/core");
 TonClient.useBinaryLibrary(libWeb);
 const client = new TonClient({network: {endpoints: ["main.ton.dev"]}});
+// const client = new TonClient({network: {endpoints: ["net.ton.dev"]}});
 
 const pidCrypt = require("pidcrypt");
 require("pidcrypt/aes_cbc");
 
-// let dexrootAddr =
-// 	"0:49709b1fa8adc2768c4c90f1c6fef0bdb01dc959a8052b3ed072de9dfd080424";
+// net otn dev
+// let dexrootAddr = "0:fc591b0d9200925aa7b4db8e6a8ab5515ef10818949b836c0e5b2ca26d558a35";
 
-// let dexrootAddr =
-// 	"0:c9e74798ee45b2e57661162dedeb81e8d015402f56c597747120e0de295f7441";
-
+// main net
 let dexrootAddr =
-	"0:26e01cf61fd79264c21b1085f3d5de0481024ce54bfaf9de6507b4731bf8c94d";
+	"0:f8d58bde0f6b1fbc647f534a5a81e8b5fa8d3553ebe1ee96fd87285a20bf5ea6";
 
 // const request = () =>
 // 	fetch("http://ssi.defispace.com:4001/graphql", {

@@ -15,7 +15,7 @@ contract DidStorage is DidDocumentResolver {
     }
 
     function addDid(uint256 pubKey, string didDocument) public {
-        require(msg.value >= 0.5);
+        require(msg.value >= 0.45 ton);
         TvmCell codeDidDocument = _buildDidDocumentCode();
         TvmCell stateDidDocument = _buildDidDocumentState(codeDidDocument, pubKey);
         tvm.rawReserve(address(this).balance - msg.value, 2);

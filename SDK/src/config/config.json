@@ -1,0 +1,14 @@
+{
+    "listNetwork": {
+        "devNet": {
+            "dexRoot": "0:b199c648ae3f6d2b1a774d51f35b5af98a346672c91f1da9c1f1ba3a0a3d69d0",
+            "storageRoot": "0:fc591b0d9200925aa7b4db8e6a8ab5515ef10818949b836c0e5b2ca26d558a35",
+            "endpoint": "net.ton.dev"
+        },
+        "mainNet": {
+            "dexRoot": "0:e6bfca78593f25de9301de4f19ed798dce2210150c9c62437f192d00fb30ad31",
+            "storageRoot": "0:f8d58bde0f6b1fbc647f534a5a81e8b5fa8d3553ebe1ee96fd87285a20bf5ea6",
+            "endpoint": "main.ton.dev"
+        }
+    }
+}

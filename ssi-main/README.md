@@ -1,4 +1,7 @@
-# DEX frontend
+## Description
+
+Web Interface for DID management
+Web interface for managing DID and DidDocument (create, modify, delete) using DEXClient or EVERWallet extension.
 
 ## Available Scripts
 

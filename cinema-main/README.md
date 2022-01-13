@@ -1,4 +1,7 @@
-# DEX frontend
+## Description
+
+Frontend of integration example with DID authentication (include demo QR Code authentication)
+There is a demo web application (Frontend) that shows DID integration. The site implements authentication using DID.
 
 ## Available Scripts
 

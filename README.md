@@ -4,7 +4,7 @@
 
 **Path**: [api](./api)
 
-**Details**: There is an API that can be used for authentication
+**Details**: Backend of integration example with did authentication
 
 ## SDK
 
@@ -22,16 +22,22 @@
 
 **Path**: [cinema-main](./cinema-main)
 
-**Details**: the code of our test site for showing authentication
+**Details**: Frontend of integration example with did authentication
 
 ## ssi-main
 
 **Path**: [ssi-main](./ssi-main)
 
-**Details**: site code for creating and changing DID
+**Details**: web Interface for DID management
 
 ## wordpress
 
 **Path**: [wordpress](./wordpress)
 
-**Details**: wordpress plugin code
+**Details**: wordpress plugin with did authentication
+
+## wordpress-qr
+
+**Path**: [wordpress-qr](./wordpress-qr)
+
+**Details**: wordpress plugin with qr code authentication

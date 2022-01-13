@@ -2,7 +2,10 @@
 
 ## Description
 
-[NestJS](https://github.com/nestjs/nest)  codebase containing ssi API
+[NestJS](https://github.com/nestjs/nest)
+
+Backend of integration example with DID authentication (include demo QR Code authentication)
+There is a demo web application (Backend) that shows DID integration. The site implements authentication using DID.
 
 ## Installation
 Clone the repository

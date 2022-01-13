@@ -8,15 +8,14 @@ import { VerifyDBEntity } from './verifyDB.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/createUser.dto';
 import {nanoid} from 'nanoid';
-import {sign} from 'jsonwebtoken';
-import {JWT_SECRET} from '@app/config'
+import {sign, verify} from 'jsonwebtoken';
+import {JWT_SECRET, NET_EVER} from '@app/config'
 import { UserResponseInterface } from './types/userResponse.interface';
 import { LoginUserDto } from './dto/login.dto';
 import { UsersEntity } from './users.entity';
 let crypto = require('crypto');
 import * as ed from 'noble-ed25519';
 import { Account } from '@tonclient/appkit';
-import { stringify } from 'querystring';
 
 
 
@@ -96,7 +95,7 @@ export class AuthService {
 
     async getDidContract(did): Promise<string>{
         TonClient.useBinaryLibrary(libNode);
-        const tonClient = new TonClient({network: {endpoints: ['net.ton.dev']}});
+        const tonClient = new TonClient({network: {endpoints: [NET_EVER]}});
         const DIDStorageContractAddress = '0:ee63d43c1f5ea924d3d47c5a264ad2661b5a4193963915d89f3116315350d7d3';
         const acc = new Account({abi: DIDStorageABI}, {
             address: DIDStorageContractAddress, 
@@ -118,12 +117,12 @@ export class AuthService {
 
     async getDidDoc(address): Promise<any>{
         TonClient.useBinaryLibrary(libNode);
-        const tonClient = new TonClient({network: {endpoints: ['net.ton.dev']}});
-        const strAddress =  address.addr || address 
+        const tonClient = new TonClient({network: {endpoints: [NET_EVER]}});
+        const strAddress =  address.addr || address
 
         const DIDStorageContractAddress = strAddress;
         const acc = new Account({abi: DIDDocABI}, {
-            address: DIDStorageContractAddress, 
+            address: DIDStorageContractAddress,
             client: tonClient,
             signer: signerNone()
         });
@@ -131,7 +130,7 @@ export class AuthService {
         const response = await acc.runLocal('getDid', {});
         console.log(JSON.parse(response.decoded.out_messages[0].value.value0.didDocument));
         return JSON.parse(response.decoded.out_messages[0].value.value0.didDocument)
-    } catch (err) { 
+    } catch (err) {
         console.log('DID Document load failed', err);
         return null;
     }
@@ -164,10 +163,10 @@ export class AuthService {
 
     buildUserResponse(user: UsersEntity): UserResponseInterface {
         return{
-           // user: {
-                //...user,
+            user: {
+                ...user,
                 token: this.generateJwt(user)
-           // }
+            }
         }
     }
     async findById(id: number): Promise<UsersEntity> {
@@ -188,6 +187,19 @@ export class AuthService {
 
         const hash = crypto.createHash('sha256').update(input.message).digest('hex');
         return await ed.verify(input.signatureHex, hash, input.did);
+    }
+
+    async jwtRead(input): Promise<string> {
+        // return true;//todo delete me
+        const verifyJWT = verify(input.jwt, JWT_SECRET)
+        if(!verifyJWT){
+            throw new HttpException(
+            'Credentials are not valid',
+            HttpStatus.UNPROCESSABLE_ENTITY
+            )
+        }
+        return verifyJWT
+
     }
 
 }

@@ -3,7 +3,7 @@
 ## Description
 
 [NestJS](https://github.com/nestjs/nest)  codebase containing ssi API
-
+Backend for interacting with the contract in the Everscale network. Checking for the existence of a document did for SSI ((Self-Sovereign Identity)). Gives the JWT token to the Frontend for authorization, checks whether the private key belongs to the user.
 ## Installation
 Clone the repository
 ```bash
@@ -126,7 +126,7 @@ ____
 
 /auth/user/id
 
-returns true if the user is found (boolean)
+returns true if the user is found id and did
 ____
 
 

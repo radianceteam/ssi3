@@ -1,3 +1,4 @@
+import { JWT_SECRET } from '@app/config';
 import { Body, Controller, Get, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from './decorator/user.decorator';
@@ -11,6 +12,7 @@ import { VerifyDBEntity } from './verifyDB.entity';
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService){}
+    
     @Post()
     @UsePipes(new ValidationPipe())
     async createUser(
@@ -37,17 +39,8 @@ export class AuthController {
 
     @Get('user/id')
     @UseGuards(AuthGuard)
-    async currentId(@User() user: UsersEntity): Promise<boolean> {
-      return true;
-    }
-
-    @Post('test')
-    async signTest(
-        @Body() sign: any
-        ): Promise<any> {
-         //   console.log(sign)
-        const val = await this.authService.signMessage(sign);
-        return val
+    async currentId(@User() user: UsersEntity): Promise<UserResponseInterface> {
+       return this.authService.buildUserResponse(user);
     }
 
     @Post('didadrr')
@@ -63,17 +56,31 @@ export class AuthController {
     async getDidDoc(
         @Body() did: any
         ): Promise<any> {
-            console.log(did)
         const val = await this.authService.getDidDoc(did);
         return val
     }
 
-    @Post('testdecode')
-    async verifyTest(
+    @Post('signature')
+    async signHex(
         @Body() sign: any
         ): Promise<any> {
-         //   console.log(sign)
+        const val = await this.authService.signMessage(sign);
+        return val
+    }
+
+    @Post('decode')
+    async verifyDecode(
+        @Body() sign: any
+        ): Promise<any> {
         const val = await this.authService.verifyMessage(sign);
         return val
+    }
+
+    @Post('jwt')
+    async jwtRead(
+        @Body() jwt: any
+        ): Promise<any> {
+        console.log(jwt)
+        return await this.authService.jwtRead(jwt);
     }
 }

@@ -87,7 +87,6 @@ async function main() {
 ### How to install
 
 ```shell
-git clone
 npm install
 ```
 

@@ -10,11 +10,11 @@ There is a demo web application (Backend) that shows DID integration. The site i
 ## Installation
 Clone the repository
 ```bash
-$ git clone https://github.com/
+$ git clone https://github.com/radianceteam/ssi3
 ```
 Switch to the repo folder
 ```bash
-$ cd everscale-ssi-api
+$ cd ssi3/api
 ```
 Install dependencies
 ```bash

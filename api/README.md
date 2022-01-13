@@ -10,7 +10,7 @@ There is a demo web application (Backend) that shows DID integration. The site i
 ## Installation
 Clone the repository
 ```bash
-$ git clone https://github.com/radianceteam/ssi3
+$ git clone https://github.com/radianceteam/ssi3.git
 ```
 Switch to the repo folder
 ```bash

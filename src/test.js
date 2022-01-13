@@ -64,6 +64,8 @@ async function main() {
         console.log()
         await viewDidDocument("didDocument after all changes")
         console.log()
+        await test4()
+        console.log()
         console.log("All tests have been successfully completed")
     } catch(er) {
         console.log(er)
@@ -94,10 +96,16 @@ async function test2() {
     return new Promise(async (resolve, reject) => {
         try {
             await api.init(DocumentContract, await client.getAddress(), client.signer)
-            await Timeout(5000)
-            console.log()
-            console.log("Test2 completed successfully")
-            resolve(true)
+            await Timeout(15000)
+            ress = await api.getDid(DocumentContract)
+            if(ress.value0.issuerAddr == await client.getAddress() && ress.value0.status == 1) {
+                console.log()
+                console.log("Test2 completed successfully")
+                resolve(true)
+            } else {
+                console.log("Test2 failed. It was not possible to activate the did. \nYou will not be able to perform further tests")
+                reject(false)
+            }
         } catch {
             console.log("Test2 failed. It was not possible to activate the did. \nYou will not be able to perform further tests")
             reject(false)
@@ -113,11 +121,38 @@ async function test3() {
         didDocument.context[0] = "https://test/test/23/test"
         await api.newDidDocument(client, DocumentContract, JSON.stringify(didDocument))
         await api.newDidIssuerAddr(client, DocumentContract, await client2.getAddress())
-        await Timeout(20000)
+        await Timeout(15000)
+        ress = await api.getDid(DocumentContract)
         console.log()
-        console.log("Test3 completed successfully")
+        if(ress.value0.didDocument == JSON.stringify(didDocument) && ress.value0.issuerAddr == await client2.getAddress()) {
+            console.log("Test3 completed successfully")
+        } else {
+            console.log("Test3 failed. changing didDocument failed")
+        }
     } catch {
         console.log("Test3 failed. changing didDocument failed")
+    }
+    
+}
+
+async function test4() {
+
+    try {
+        console.log()
+        console.log("Test4: Security check")
+        console.log()
+        console.log("We are trying to call the change function from a contract that is not a controller")
+        await api.newDidStatus(client, DocumentContract, 0)
+        Timeout(15000)
+        ress = await api.getDid(DocumentContract)
+        console.log()
+        if(ress.value0.status == 1) {
+            console.log("Test4 completed successfully")
+        } else {
+            console.log("Test4 failed. Status = " + ress.value0.status)
+        }
+    } catch(er) {
+        console.log("Test4 failed")
     }
     
 }

@@ -55,6 +55,7 @@ class Everscale_Ssi_Authorization_Public {
         $this->version = $version;
         self::addPage();
         add_shortcode( 'custom-login-form', array( $this, 'render_login_form' ) );
+        add_shortcode( 'account-info', array( $this, 'render_acc_form' ) );
 
 
     }
@@ -81,6 +82,32 @@ class Everscale_Ssi_Authorization_Public {
         return $this->get_template_html( 'login_form', $attributes );
     }
 
+    public function render_acc_form( $attributes, $content = null ) {
+        // Разбор атрибутов шорткода
+        $default_attributes = array( 'show_title' => false );
+        $attributes = shortcode_atts( $default_attributes, $attributes );
+        $show_title = $attributes['show_title'];
+        $current_user = wp_get_current_user();
+        $attributes['id'] = $current_user->ID;
+        $attributes['roles'] = $current_user->roles;
+        $attributes['name'] = $current_user->user_login;
+        //var_dump($current_user);
+        if ( !is_user_logged_in() ) {
+            return __( 'You not signed in.', 'personalize-login' );
+        }
+
+        // Передаём параметр для перенаправления: по умолчанию,
+        // Если будет передан валиндый параметр, то
+        // обрабатываем его.
+        $attributes['redirect'] = '';
+        if ( isset( $_REQUEST['redirect_to'] ) ) {
+            $attributes['redirect'] = wp_validate_redirect( $_REQUEST['redirect_to'], $attributes['redirect'] );
+        }
+
+        // Отображаем форму входа
+        return $this->get_template_html( 'acc_form', $attributes );
+    }
+
     private function get_template_html( $template_name, $attributes = null ) {
         if ( ! $attributes ) {
             $attributes = array();
@@ -100,6 +127,25 @@ class Everscale_Ssi_Authorization_Public {
         return $html;
     }
 
+    function redirect_to_custom_login() {
+        if ( $_SERVER['REQUEST_METHOD'] == 'GET' ) {
+            $redirect_to = isset( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : null;
+
+            if ( is_user_logged_in() ) {
+                $this->redirect_logged_in_user( $redirect_to );
+                exit;
+            }
+
+            // В остальных случая направляем на страницу логина
+            $login_url = home_url( 'member-login' );
+            if ( ! empty( $redirect_to ) ) {
+                $login_url = add_query_arg( 'redirect_to', $redirect_to, $login_url );
+            }
+    
+            wp_redirect( $login_url );
+            exit;
+        }
+    }
 
     function add_user_contact_did( $method ) {
     

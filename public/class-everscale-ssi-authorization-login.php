@@ -32,7 +32,8 @@ class Everscale_Ssi_Authorization_login {
 
 		$this->everscale_ssi_authorization = $everscale_ssi_authorization;
 		$this->version = $version;
-		add_filter( 'login_redirect', array( $this, 'redirect_after_login' ), 10, 3 );
+		add_filter( 'logout_redirect', array( $this, 'redirect_before_login' ), 10, 3 );
+
       //  add_action('wp_ajax_everscale_form', array( $this, 'everscale_form'));
       //  add_action('wp_ajax_nopriv_everscale_form', array( $this, 'everscale_form'));
 
@@ -78,7 +79,7 @@ class Everscale_Ssi_Authorization_login {
 							wp_set_auth_cookie  ( $user->ID ); // Set auth details in cookie
 							$message = "Logged in successfully";
 						} else {
-							$message = "Failed to log in";
+							$message = '';
 						}
 
 						echo $message;
@@ -90,7 +91,7 @@ class Everscale_Ssi_Authorization_login {
 					'did'        => $did, 
 				];
 				$user = wp_insert_user($userdata);
-				var_dump($user);
+				//var_dump($user);
 				if ( !is_wp_error( $user ) )
 				{
 					wp_clear_auth_cookie();
@@ -98,7 +99,7 @@ class Everscale_Ssi_Authorization_login {
 					wp_set_auth_cookie  ( $user ); // Set auth details in cookie
 					$message = "Logged in successfully";
 				} else {
-					$message = "Failed to log in";
+					$message = '';
 				}
 
 				echo $message;
@@ -107,11 +108,10 @@ class Everscale_Ssi_Authorization_login {
 
 
 
-
         wp_die();
     }
 
-	public function redirect_after_login( $redirect_to, $requested_redirect_to, $user ) {
+	public function redirect_before_login( $redirect_to, $requested_redirect_to, $user ) {
 		$redirect_url = home_url();
 	
 		if ( ! isset( $user->ID ) ) {
@@ -127,10 +127,10 @@ class Everscale_Ssi_Authorization_login {
 			}
 		} else {
 			// Не администраторы будут направляться на страницу информаци о профиле
-			$redirect_url = home_url( 'member-account' );
+			$redirect_url = home_url();
 		}
 	
-		return wp_validate_redirect( $redirect_url, home_url() );
+		return wp_validate_redirect( $redirect_url, home_url());
 	}
 
 	private function check_jwt($did, $token){

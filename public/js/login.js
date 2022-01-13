@@ -15,10 +15,10 @@ jQuery(document).ready( function($){
         name: $('#log_in_name').val(),
       },
       success: function(data){
-        console.log(data)
+        window.location.replace("https://wordpress.defispace.com/member-account/");
       },
       error: function(error){
-        console.log(error)
+        alert('error ' + error.message)
       }
     })
 

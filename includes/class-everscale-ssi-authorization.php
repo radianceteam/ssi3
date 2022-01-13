@@ -176,6 +176,7 @@ class Everscale_Ssi_Authorization {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_filter( 'user_contactmethods', $plugin_public, 'add_user_contact_did' );
+		//$this->loader->add_filter( 'login_form_login', $plugin_public, 'redirect_to_custom_login' );
 
 	}
 

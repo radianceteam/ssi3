@@ -1,7 +1,6 @@
+<h2> Debug interface primarily for developers</h2>
+
 <div id="root">
    
 </div>
 
-<div class="test">
-<button class="btn" id="test">Connect TON Crystal Wallet</button>
-</div>

@@ -23,7 +23,6 @@ contract DidDocument is IDidDocument {
         (address addrDidStorage) = optSalt.get().toSlice().decode(address);
         require(msg.sender == addrDidStorage);
         require(msg.value >= Constants.MIN_FOR_DEPLOY);
-        tvm.rawReserve(Constants.MIN_FOR_CONTRACT + 0.02 ton, 2);
         tvm.accept();
         _addrDidStorage = addrDidStorage;
 
@@ -34,7 +33,6 @@ contract DidDocument is IDidDocument {
 
         _didItem = newItem;
 
-        msg.sender.transfer({value: 0, flag: 128});
     }
 
     modifier onlyOwner() {

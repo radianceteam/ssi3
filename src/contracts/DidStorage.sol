@@ -14,17 +14,17 @@ contract DidStorage is DidDocumentResolver {
         _codeDidDocument = codeDidDocument;
     }
 
-    function addDid(uint256 pubKey, string didDocument) public returns (uint256) {
+    function addDid(uint256 pubKey, string didDocument) public {
+        require(msg.value >= 0.5);
         TvmCell codeDidDocument = _buildDidDocumentCode();
         TvmCell stateDidDocument = _buildDidDocumentState(codeDidDocument, pubKey);
-        tvm.rawReserve(Constants.MIN_FOR_CONTRACT, 2);
+        tvm.rawReserve(address(this).balance - msg.value, 2);
         new DidDocument{stateInit: stateDidDocument, value: 0.4 ton}(pubKey, didDocument);
 
         _totalDid++;
 
         msg.sender.transfer({value: 0, flag: 128});
 
-        return pubKey;
     }
 
     function signData(string data) public view returns (uint256) {

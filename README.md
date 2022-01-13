@@ -27,18 +27,18 @@ npm run test
 ```
 
 ### Description
-Тесты выполняються автоматически и показывают правильное выполнение функций контракта.
+All tests run automatically and show the correctness of contracts functions execution
 
 ### Params
-Для тестов все параметры заготовленны заранее
+Tests parameters are all predefined 
 
 ### Returns
-Результат выполнения тестов(выполнен/невыполнен).
-DID document до изменения/после изменения
+Results of tests as Succeed or Failed
+DID document before and after change
 
 ## Specification
 
-**Title**: Описание функций контракта
+**Title**: Contracts methods description
 
 **Path**: [docs/specification.md](./docs/specification.md)
 

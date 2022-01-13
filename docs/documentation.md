@@ -1,4 +1,4 @@
-# Documentation on Radiacne Team DID
+# Documentation on Radiance Team DID
 
 ## Key terms
 
@@ -6,31 +6,31 @@
 
 **DID controller** – An entity that has the capability to make changes to a DID document. A DID might have more than one DID controller.
 
-**DID document** – Набор данных, описывающих субъект DID, включая такие механизмы как криптографические открытые ключи, которые можно использовать для аутентификации себя и подтверждения своей связи с DID.
+**DID document** – A collection of data describing a DID subject, including mechanisms such as cryptographic public keys that can be used to authenticate oneself and validate one's association with the DID.
 
-**DID method** – Метод DID определяется спецификацией метода DID, которая указывает точные операции, с помощью которых создаются, разрешаются, обновляются и деактивируются DID и DID document.
+**DID method** – The DID method is defined by the DID method specification, which specifies the exact operations by which DIDs and DIDs are created, resolved, updated, and deactivated document.
 
-**DID subject** – Объект, идентифицируемый DID и описываемый DID document. DID subject может быть что угодно: человек, группа, организация, физическая вещь, цифровая вещь, логическая вещь и т.д. 
+**DID subject** – The object identified by the DID and described by the DID document. The DID subject can be anything: a person, a group, an organization, a physical thing, a digital thing, a logical thing, etc.
 
-**verifiable data registry** – Система, упрощающая создание, проверку, обновление и/или деактивацию DID и DID document.
+**Verifiable data registry** – A system that makes it easy to create, check, update and / or deactivate DID and DID document.
 
 ## Annotation
 
-Децентрализованные идентификаторы – это новый тип идентификаторов, которые используют криптографию для подтверждения данных без третьих сторон.  DID были разработаны таким образом что их можно было отделить от централизованных реестров, поставщиков удостоверений и центров сертификации. Каждый DID связан с DID document который в свою очередь описывает DID subject которому принадлежит DID.  
+Decentralized identifiers are a new type of identifier that uses cryptography to validate data without third parties. DIDs were created to be decoupled from centralized registries, identity providers, and certification authorities. Each DID link with DID document describing the DID subject to which the DID belongs.
 
-Наша система использует метод DID представленный в виде смарт-контрактов Everscale которые хранят информацию, которая представлена в виде DID document. Имя метода DID - «everscale». 
+Our system uses the DID method, represented in the form of Everscale smart contracts, which store information in DID document. The DID method is called as «everscale". 
 
 
 ## DID syntax
 
-Схема DID представляет собой схему URI, соответствующую RFC3986.
+DID Scheme is an RFC3986-compliant URI Scheme.
 
-DID URI состоит из 3 частей: 
-1)	Схема URI(«did:»)
-2)	Идентификатор для метода DID(«everscale:»)
-3)	Уникальный метод DID конкретного идентификатора
+The DID URI has 3 parts: 
+1)	URI scheme ("did:")
+2)	An identifier for the DID method ("everscale:")
+3)	The unique DID method of a specific identifier
 
-Наш метод Everscale DID соответствует требованиям, изложенным в разделе 8.1 did-core. DID которые используют наш метод должен начинаться с префикса: did:everscale. Остальная часть после префикса представляет собой идентификатор конкретного метода, который представлен в виде pubkey контракта Everscale, который принадлежит DID subject которого описывает DID document хранящийся под этим DID.
+Our Everscale DID method meets the requirements outlined in did-core section 8.1. DIDs that use our method must start with the prefix: did: everscale. The rest after the prefix is   the identifier of the particular method, which is represented as a pubkey Everscale contract. Pubkey Everscale contract belongs to the DID subject which describes the DID document stored under this DID.
 
 
 **Example**: did:everscale:28f5254ada3193904d65d0ab4d60a05d8ae51f03a2d4cf7d4352030996188580
@@ -41,34 +41,34 @@ DID URI состоит из 3 частей:
 ![alt text](./scheme.png)
 
 
-## Операции CRUD
+## CRUD operations
 
-Смарт-контракт DIDStorage служит интерфейсом для создания DID и поиска DID document по pubkey. Все действия по чтению, изменению и деактивации DID происходят в смарт-контракте DIDDocument, который создается для каждого DID и DIDDocument.
+The DIDStorage smart contract serves as an interface for generating DIDs and searching for DID documents by pubkey. All actions for reading, changing and deactivating a DID take place in the DIDDocument smart contract, which is created for each DID and DIDDocument.
 
-Спецификацию всех функций контракта можно найти здесь: [docs/specification.md](./specification.md)
+The specification of all contract functions: [docs/specification.md](./specification.md)
 
-### Создать
+### Create
 
-Everscale DID может быть создан на прямую если знать адрес контракта DIDStorage или используя наш SDK. 
+Everscale DID can be created directly if you know the address of the DIDStorage contract or using our SDK.
 
-DID Document создается с помощью развертывания контракта DIDDocument и вызова функции init, которую нужно подписать secret key владельца pubkey указанного при создании DIDDocument.
-Для создания DID и DIDDocument нужно вызвать метод addDid в DIDStorage с правильными параметрами. И последующим вызовом init из DIDDocument
+The DID Document is created by deploying the DIDDocument contract and calling the init function, which must be signed with the secret key of the owner of the pubkey specified when the DIDDocument was created. 
+To create the DID and DIDDocument, you must call the addDid method in DIDStorage with the correct parameters. And then calling init from DIDDocument.
 
-### Читать
+### Read
 
-Чтение можно разделить на 2 функции поиска контракта с помощью функции resolveDidDocument в контракте DIDStorage которая вернет адрес контракта DIDDocument
+Reading can be divided in 2 contract using the resolveDidDocument function in the DIDStorage contract which will return the address of the DIDDocument contract.
 
-Вторая часть заключается в чтение DID Document с помощь функции getDid в контракте DIDDocument
+The second part is to read the DID Document using the getDid function in the DIDDocument contract.
 
 
-### Обновить
+### Refresh
 
-Для обновления DID Document существует 2 функции и доступны только для DID controller. 
-newDIDDocument обновляет сам DID Document
-newDidIssuerAddr обновляет адрес DID controller 
+here are 2 functions to update DID Document which available only for DID controller.
+newDIDDocument updates the DID Document 
+newDidIssuerAddr updates the DID controller address
 
-### Деактивировать и удалить
+### Deactivate and remove
 
-Методы доступны только DID controller
-newDidStatus обновляет статус DID Document
-deleteDidDocument полностью удаляет DID и DID Document
+Methods available only for DID controller.
+newDidStatus updates status DID Document
+deleteDidDocument completely deletes DID and DID Document
